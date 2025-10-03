@@ -33,3 +33,20 @@ do
     # Wait for the next check
     sleep $INTERVAL
 done
+============================================================================================================================================================================================================
+
+
+
+Step-by-Step Explanation
+
+SERVICE="nginx" → Specify which service to monitor.
+
+while true → Infinite loop, keeps checking continuously.
+
+systemctl is-active --quiet $SERVICE → Checks if the service is running.
+
+If running → prints status.
+
+If down → attempts to restart the service and prints success/failure.
+
+sleep $INTERVAL → Waits 10 seconds before the next check.
