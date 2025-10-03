@@ -1,0 +1,35 @@
+Write a script using while loop to monitor a service and restart it if it’s down.
+
+
+#!/bin/bash
+
+# Name of the service to monitor
+SERVICE="nginx"
+
+# Interval in seconds between checks
+INTERVAL=10
+
+echo "Monitoring $SERVICE service..."
+
+while true
+do
+    # Check if the service is active
+    if systemctl is-active --quiet $SERVICE
+    then
+        echo "$(date): $SERVICE is running."
+    else
+        echo "$(date): $SERVICE is down! Restarting..."
+        systemctl restart $SERVICE
+
+        # Check if restart was successful
+        if systemctl is-active --quiet $SERVICE
+        then
+            echo "$(date): $SERVICE restarted successfully."
+        else
+            echo "$(date): Failed to restart $SERVICE!"
+        fi
+    fi
+
+    # Wait for the next check
+    sleep $INTERVAL
+done
