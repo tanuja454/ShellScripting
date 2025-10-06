@@ -1,0 +1,55 @@
+
+
+Monitor CPU and memory usage periodically and log the output to a file for analysis.
+
+
+#!/bin/bash
+# ===========================================================
+# Script Name : resource_monitor.sh
+# Description : Monitors CPU and Memory usage and logs it to a file
+# Author      : Tanuja (DevOps Practice)
+# Date        : $(date +%Y-%m-%d)
+# ===========================================================
+
+# Log file path
+LOG_FILE="/var/log/resource_usage.log"
+
+# Function to get CPU usage
+get_cpu_usage() {
+    # 'top' command gives CPU usage; extract idle % and calculate usage
+    CPU_IDLE=$(top -bn1 | grep "Cpu(s)" | awk '{print $8}' | cut -d'.' -f1)
+    CPU_USAGE=$((100 - CPU_IDLE))
+    echo "$CPU_USAGE"
+}
+
+# Function to get Memory usage
+get_mem_usage() {
+    # free command gives memory usage; calculate percentage used
+    MEM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
+    MEM_USED=$(free -m | awk '/Mem:/ {print $3}')
+    MEM_USAGE=$((MEM_USED * 100 / MEM_TOTAL))
+    echo "$MEM_USAGE"
+}
+
+# Timestamp
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+# Get CPU and Memory usage
+CPU=$(get_cpu_usage)
+MEM=$(get_mem_usage)
+
+# Log the output
+echo "$TIMESTAMP | CPU Usage: ${CPU}% | Memory Usage: ${MEM}%" >> "$LOG_FILE"
+
+# Optional: Display on console
+echo "$TIMESTAMP | CPU Usage: ${CPU}% | Memory Usage: ${MEM}%"
+==================================================================================================================================================================================================================
+
+🧠 Explanation
+Part	Description
+LOG_FILE	Path to the log file where resource usage will be stored.
+top -bn1	Non-interactive mode to get CPU stats once.
+free -m	Provides memory stats in MB.
+$((CPU_USED))	Calculates CPU usage as 100% - idle %.
+$((MEM_USED * 100 / MEM_TOTAL))	Calculates memory usage percentage.
+echo >> "$LOG_FILE"	Appends CPU & memory usage with timestamp to log file.
