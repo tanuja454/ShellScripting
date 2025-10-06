@@ -1,0 +1,53 @@
+💡 What Is a Log File?
+
+A log file records what happens in your system or application.
+Examples:
+
+/var/log/syslog → system messages
+
+/var/log/nginx/error.log → web server logs
+
+/var/log/messages → general Linux logs
+
+🧭 What You Want to Do
+
+👉 Check if any error or fail message is found in a log file.
+
+If yes → show a message or send an alert.
+If not → say “No errors found”.
+
+🧾 Simple Script to Check Logs
+
+=====================================================================================================================================================================
+
+#!/bin/bash
+# Script Name : check_logs.sh
+# Purpose     : To check if any errors are found in log file
+
+# 1. Path of the log file
+LOG_FILE="/var/log/syslog"
+
+# 2. Keywords to search for
+KEYWORDS="error|fail|critical"
+
+# 3. Check last 100 lines for keywords
+tail -n 100 $LOG_FILE | grep -iE "$KEYWORDS" > /tmp/error_logs.txt
+
+# 4. If errors found, show message
+if [ -s /tmp/error_logs.txt ]; then
+    echo "⚠️  Errors found in $LOG_FILE"
+    cat /tmp/error_logs.txt
+else
+    echo "✅ No errors found in $LOG_FILE"
+fi
+=================================================================================================================================================================================================
+
+🧠 Step-by-Step Explanation
+Line	What it does
+LOG_FILE="/var/log/syslog"	Select which log file to check.
+`KEYWORDS="error	fail
+tail -n 100	Looks at the last 100 lines (recent logs).
+grep -iE	Searches for the keywords (case-insensitive).
+> /tmp/error_logs.txt	Saves output to a temporary file.
+if [ -s file ]	Checks if the file is not empty (means errors found).
+cat /tmp/error_logs.txt	Displays the found errors.
