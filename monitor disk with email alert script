@@ -1,0 +1,30 @@
+Write a script to monitor disk usage and send an alert if usage > 80% and email alert also
+
+#!/bin/bash
+# ===========================================================
+# Script Name : disk_alert.sh
+# Description : Monitors disk usage and sends email alert if usage > 80%
+# Author      : Tanuja (DevOps Practice)
+# Date        : $(date +%Y-%m-%d)
+# ===========================================================
+
+THRESHOLD=80  # Disk usage threshold percentage
+EMAIL="admin@example.com"  # Change this to your email address
+
+# Get disk usage details (excluding temporary partitions)
+df -h --output=pcent,target | grep -vE "tmpfs|devtmpfs|Use%" | while read output
+do
+    usage=$(echo $output | awk '{print $1}' | tr -d '%')
+    mount_point=$(echo $output | awk '{print $2}')
+
+    # Check if usage exceeds threshold
+    if [ "$usage" -gt "$THRESHOLD" ]; then
+        echo "🚨 ALERT: Disk usage on $mount_point is ${usage}% (Threshold: ${THRESHOLD}%)"
+        
+        # Create alert message
+        message="Warning: Disk usage on $mount_point has reached ${usage}% on $(hostname) at $(date)."
+
+        # Send email alert
+        echo "$message" | mail -s "Disk Usage Alert on $(hostname)" "$EMAIL"
+    fi
+done
