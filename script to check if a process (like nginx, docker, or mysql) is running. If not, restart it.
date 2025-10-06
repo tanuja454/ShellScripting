@@ -1,0 +1,43 @@
+Write a script to check if a process (like nginx, docker, or mysql) is running. If not, restart it.
+
+#!/bin/bash
+# ===========================================================
+# Script Name : process_monitor.sh
+# Description : Checks if a process (nginx, docker, mysql etc.) is running.
+#               If not running, restarts the service and sends an email alert.
+# Author      : Tanuja (DevOps Practice)
+# Date        : $(date +%Y-%m-%d)
+# ===========================================================
+
+# Define services to monitor
+SERVICES=("nginx" "docker" "mysql")
+
+# Email for alerts
+EMAIL="admin@example.com"
+
+# Loop through each service
+for service in "${SERVICES[@]}"
+do
+    # Check if service is active
+    if systemctl is-active --quiet "$service"; then
+        echo "✅ $service is running."
+    else
+        echo "⚠️  $service is not running! Attempting to restart..."
+
+        # Restart the service
+        systemctl restart "$service"
+
+        # Wait a bit and recheck
+        sleep 3
+        if systemctl is-active --quiet "$service"; then
+            echo "✅ $service restarted successfully."
+            message="Service '$service' was down but successfully restarted on $(hostname) at $(date)."
+        else
+            echo "🚨 Failed to restart $service!"
+            message="ALERT: Service '$service' failed to restart on $(hostname) at $(date). Immediate attention required!"
+        fi
+
+        # Send email alert
+        echo "$message" | mail -s "Service Alert: $service on $(hostname)" "$EMAIL"
+    fi
+done
